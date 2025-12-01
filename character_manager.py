@@ -95,7 +95,33 @@ def save_character(character, save_directory="data/save_games"):
     # Create save_directory if it doesn't exist
     # Handle any file I/O errors appropriately
     # Lists should be saved as comma-separated values
-    pass
+    try:
+        os.makedirs(save_directory, exist_ok=True)
+
+        filename = f"{character["name"]}_save.txt"
+        filepath = os.path.join(save_directory, filename)
+
+        with open(filepath, 'w') as f:
+            f.write(f"NAME: {character['name']}\n")
+            f.write(f"CLASS: {character['class']}\n")
+            f.write(f"LEVEL: {character['level']}\n")
+            f.write(f"HEALTH: {character['health']}\n")
+            f.write(f"MAX_HEALTH: {character['max_health']}\n")
+            f.write(f"STRENGTH: {character['strength']}\n")
+            f.write(f"MAGIC: {character['magic']}\n")
+            f.write(f"EXPERIENCE: {character['experience']}\n")
+            f.write(f"GOLD: {character['gold']}\n")
+            f.write(f"INVENTORY: {','.join(character['inventory'])}\n")
+            f.write(f"ACTIVE_QUESTS: {','.join(character['active_quests'])}\n")
+            f.write(f"COMPLETED_QUESTS: {','.join(character['completed_quests'])}\n")
+
+            return True
+    except IOError as e:
+        print(f"Error saving character {character['name']}: {e}")
+        raise
+    except KeyError as e:
+        print(f"Error saving: character dictionary is missing key {e}")
+        raise InvalidSaveDataError(f"Character data is missing key: {e}")
 
 def load_character(character_name, save_directory="data/save_games"):
     """
