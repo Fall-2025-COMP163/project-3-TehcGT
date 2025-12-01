@@ -185,7 +185,16 @@ def list_saved_characters(save_directory="data/save_games"):
     # TODO: Implement this function
     # Return empty list if directory doesn't exist
     # Extract character names from filenames
-    pass
+    try:
+        all_files = os.listdir(save_directory)
+        characters_save = []
+        for filename in all_files:
+            if filename.endswith("_save.txt"):
+                character_name = filename[:-10]
+                characters_save.append(character_name)
+        return characters_save
+    except FileNotFoundError:
+        return []
 
 def delete_character(character_name, save_directory="data/save_games"):
     """
