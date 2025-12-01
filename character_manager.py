@@ -142,7 +142,39 @@ def load_character(character_name, save_directory="data/save_games"):
     # Try to read file → SaveFileCorruptedError
     # Validate data format → InvalidSaveDataError
     # Parse comma-separated lists back into Python lists
-    pass
+
+    file_name = f"{character_name}_save.txt"
+    file_path = os.path.join(save_directory, file_name)
+
+    if not os.path.exists(file_path):
+        raise CharacterNotFoundError(f"Save file not found for {character_name}")
+    
+    try:
+        data = {}
+        with open(file_path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                if ": " in line:
+                    key, value = line.split(": ")
+                else:
+                    if line.endswith(":"):
+                        key = line[:-1]
+                        value = ""
+                    else:
+                        raise InvalidSaveDataError(f"Malformed line in save file: '{line}'")
+                    data[key] = value
+    except Exception as e:
+        raise SaveFileCorruptedError(f"Could not read save file: {e}")
+    try:
+        character = {
+            "name": data["NAME"], "class": data["CLASS"], "level": int(data["LEVEL"]), "experience": int(data["EXPERIENCE"]), "health": int(data["HEALTH"]), "strength": int(data["STRENGTH"]), "gold": int(data["GOLD"]), "inventory": data["INVENTORY"].split(",") if data["INVENTORY"] else [], "active_quests": data["ACTIVE_QUESTS"].split(",") if data["ACTIVE_QUESTS"] else [], "completed_quests": data["COMPLETED_QUESTS"].split(",") if data["COMPLETED_QUESTS"] else []}
+
+        return character
+
+    except Exception as e:
+        raise InvalidSaveDataError(f"Invalid save data: {e}")
 
 def list_saved_characters(save_directory="data/save_games"):
     """
