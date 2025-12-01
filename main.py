@@ -48,7 +48,20 @@ def main_menu():
     # Get user input
     # Validate input (1-3)
     # Return choice
-    pass
+
+    print("\n" + "=" * 20)
+    print("      MAIN MENU")
+    print("=" * 20)
+    print("1. New Game")
+    print("2. Load Game")
+    print("3. Exit")
+
+    while True:
+        choice = input("Select an option (1-3): ")
+        if choice in ['1', '2', '3']:
+            return int(choice)
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
 
 def new_game():
     """
