@@ -82,7 +82,29 @@ def new_game():
     # Handle InvalidCharacterClassError
     # Save character
     # Start game loop
-    pass
+    print("\n--- NEW GAME ---")
+    name = input("Enter your character's name: ").strip()
+    if not name:
+        print("Name cannot be empty. Going back to main menu.")
+        return
+    
+    print(f"Valid classes are: {', '.join(character_manager.valid_class)}")
+    char_class = input("Choose your class: ").strip().capitalize()
+    
+    try:
+        current_character = character_manager.create_character(name, char_class)
+        print(f"\nCharacter {name} the {char_class} has been created!")
+
+        save_game()
+        print(f"Game saved. {name}, ENGAGE!")
+
+        game_loop()
+
+    except InvalidCharacterClassError as e:
+        print(f"Error: {e}")
+        print("Returning to main menu.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 def load_game():
     """
