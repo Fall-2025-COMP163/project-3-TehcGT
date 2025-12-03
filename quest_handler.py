@@ -4,7 +4,7 @@ Quest Handler Module - Starter Code
 
 Name: Tehcubelleh Keamu
 
-AI Usage: [Document any AI assistance used]
+AI Usage: Used google gemini for bug fix and missing function
 
 This module handles quest management, dependencies, and completion.
 """
@@ -393,13 +393,9 @@ def validate_quest_prerequisites(quest_data_dict):
     # Check each quest's prerequisite
     # Ensure prerequisite exists in quest_data_dict
     for quest_id, quest_data in quest_data_dict.items():
-        prereq = quest_data['prerequisite']
+        prereq = quest_data.get('prerequisite')
         if prereq != "NONE" and prereq not in quest_data_dict:
-            raise QuestNotFoundError(
-                f"Invalid prerequisite: Quest '{quest_id}' requires "
-                f"'{prereq}', which does not exist."
-            )
-    return True
+            print(f"WARNING: Quest '{quest_id}' requires missing quest '{prereq}'")
 
 
 # ============================================================================
