@@ -164,7 +164,34 @@ def game_loop():
     #   Get player choice
     #   Execute chosen action
     #   Save game after each action
-    pass
+    while game_running:
+        if current_character and character_manager.is_character_dead(current_character):
+            current_character, game_running = handle_character_death(current_character)
+            continue
+
+        choice = game_menu()
+
+        if choice == 1:
+            view_character_stats()
+        elif choice == 2:
+            view_inventory()
+        elif choice == 3:
+            quest_menu()
+        elif choice == 4:
+            explore()
+        elif choice == 5:
+            shop()
+        elif choice == 6:
+            save_game()
+            print("\nGame saved. Goodbye!")
+            game_running = False
+        
+        if game_running:
+            try:
+                # We auto-save the character after every action
+                character_manager.save_character(current_character)
+            except IOError as e:
+                print(f"!! CRITICAL: Failed to auto-save game: {e} !!")
 
 def game_menu():
     """
