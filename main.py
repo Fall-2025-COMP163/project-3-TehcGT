@@ -240,7 +240,19 @@ def view_character_stats():
     # Show: name, class, level, health, stats, gold, etc.
     # Use character_manager functions
     # Show quest progress using quest_handler
-    pass
+    print("\n--- CHARACTER STATS ---")
+    print(f"  Name: {current_character['name']}")
+    print(f"  Class: {current_character['class']}")
+    print(f"  Level: {current_character['level']}")
+    print(f"  Health: {current_character['health']}/{current_character['max_health']}")
+    print(f"  XP: {current_character['experience']}")
+    print(f"  Strength: {current_character['strength']}")
+    print(f"  Magic: {current_character['magic']}")
+    print(f"  Gold: {current_character['gold']}")
+
+    quest_handler.display_character_quest_progress(current_character, all_quests)
+    
+    input("\nPress Enter to continue...")
 
 def view_inventory():
     """Display and manage inventory"""
