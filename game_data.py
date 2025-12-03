@@ -42,6 +42,32 @@ def load_quests(filename="data/quests.txt"):
     # - Invalid format → raise InvalidDataFormatError
     # - Corrupted/unreadable data → raise CorruptedDataError
 
+    if not os.path.exists(filename):
+        raise MissingDataFileError(f"Quest file not found: {filename}")
+    
+    quests = {}
+    current_block = []
+    
+    try:
+        with open(filename, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    if current_block:
+                        quest = parse_quest_block(current_block)
+                        quests[quest['quest_id']] = quest
+                        current_block = []
+                else:
+                    current_block.append(line)
+            # Catch the last block if file doesn't end with newline
+            if current_block:
+                quest = parse_quest_block(current_block)
+                quests[quest['quest_id']] = quest
+                
+        return quests
+    except IOError as e:
+        raise CorruptedDataError(f"Could not read quest file: {e}")
+
 def load_items(filename="data/items.txt"):
     """
     Load item data from file
@@ -59,7 +85,30 @@ def load_items(filename="data/items.txt"):
     """
     # TODO: Implement this function
     # Must handle same exceptions as load_quests
-    pass
+    if not os.path.exists(filename):
+        raise MissingDataFileError(f"Item file not found: {filename}")
+        
+    items = {}
+    current_block = []
+    
+    try:
+        with open(filename, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    if current_block:
+                        item = parse_item_block(current_block)
+                        items[item['item_id']] = item
+                        current_block = []
+                else:
+                    current_block.append(line)
+            if current_block:
+                item = parse_item_block(current_block)
+                items[item['item_id']] = item
+                
+        return items
+    except IOError as e:
+        raise CorruptedDataError(f"Could not read item file: {e}")
 
 def validate_quest_data(quest_dict):
     """
@@ -98,7 +147,17 @@ def create_default_data_files():
     # Create data/ directory if it doesn't exist
     # Create default quests.txt and items.txt files
     # Handle any file permission errors appropriately
-    pass
+    os.makedirs("data", exist_ok=True)
+    
+    # Create default Quests
+    with open("data/quests.txt", "w") as f:
+        f.write("QUEST_ID: q1_rats\nTITLE: Rat Catcher\nDESCRIPTION: Clear the cellar of rats.\nREWARD_XP: 100\nREWARD_GOLD: 50\nREQUIRED_LEVEL: 1\nPREREQUISITE: NONE\n\n")
+        f.write("QUEST_ID: q2_wolf\nTITLE: The Big Bad Wolf\nDESCRIPTION: Defeat the wolf in the forest.\nREWARD_XP: 200\nREWARD_GOLD: 100\nREQUIRED_LEVEL: 2\nPREREQUISITE: q1_rats\n\n")
+
+    # Create default Items
+    with open("data/items.txt", "w") as f:
+        f.write("ITEM_ID: potion_health\nNAME: Health Potion\nTYPE: consumable\nEFFECT: health:50\nCOST: 20\nDESCRIPTION: Restores 50 HP\n\n")
+        f.write("ITEM_ID: sword_iron\nNAME: Iron Sword\nTYPE: weapon\nEFFECT: strength:5\nCOST: 100\nDESCRIPTION: A standard iron sword\n\n")
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -118,7 +177,25 @@ def parse_quest_block(lines):
     # Split each line on ": " to get key-value pairs
     # Convert numeric strings to integers
     # Handle parsing errors gracefully
-    pass
+    data = {}
+    try:
+        for line in lines:
+            key, value = line.split(": ", 1)
+            data[key.lower()] = value
+        
+        # Validation and Type Conversion
+        quest = {
+            'quest_id': data['quest_id'],
+            'title': data['title'],
+            'description': data['description'],
+            'reward_xp': int(data['reward_xp']),
+            'reward_gold': int(data['reward_gold']),
+            'required_level': int(data['required_level']),
+            'prerequisite': data['prerequisite']
+        }
+        return quest
+    except (ValueError, KeyError) as e:
+        raise InvalidDataFormatError(f"Error parsing quest block: {e}")
 
 def parse_item_block(lines):
     """
@@ -131,7 +208,23 @@ def parse_item_block(lines):
     Raises: InvalidDataFormatError if parsing fails
     """
     # TODO: Implement parsing logic
-    pass
+    data = {}
+    try:
+        for line in lines:
+            key, value = line.split(": ", 1)
+            data[key.lower()] = value
+            
+        item = {
+            'item_id': data['item_id'],
+            'name': data['name'],
+            'type': data['type'],
+            'effect': data['effect'],
+            'cost': int(data['cost']),
+            'description': data['description']
+        }
+        return item
+    except (ValueError, KeyError) as e:
+        raise InvalidDataFormatError(f"Error parsing item block: {e}")
 
 # ============================================================================
 # TESTING
