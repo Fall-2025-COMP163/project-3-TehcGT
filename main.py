@@ -412,7 +412,56 @@ def shop():
     # Show current gold
     # Options: Buy item, Sell item, Back
     # Handle exceptions from inventory_system
-    pass
+    while True:
+        print("\n--- THE SHOP ---")
+        print(f"Your Gold: {current_character['gold']}")
+        
+        print("\n(B)uy, (S)ell, (L)eave Shop")
+        choice = input("Choose an action: ").strip().upper()
+        
+        if choice == 'L':
+            break
+        elif choice not in ['B', 'S']:
+            print("Invalid choice.")
+            continue
+            
+        try:
+            if choice == 'B':
+                print("\nItems for sale:")
+                for item_id, item_data in all_items.items():
+                    print(f"  - [{item_id}] {item_data['name']} (Cost: {item_data['cost']} G)")
+                
+                item_id = input("Enter Item ID to buy: ").strip()
+                
+                if item_id in all_items:
+                    item_data = all_items[item_id]
+                    inventory_system.purchase_item(current_character, item_id, item_data)
+                    print(f"You bought {item_data['name']}.")
+                else:
+                    print("Invalid Item ID.")
+            elif choice == 'S':
+                if not current_character['inventory']:
+                    print("Your inventory is empty.")
+                    continue
+                    
+                print("\nYour inventory to sell:")
+                inventory_system.display_inventory(current_character, all_items)
+                
+                item_id = input("Enter Item ID to sell: ").strip()
+                
+                if item_id in all_items:
+                    item_data = all_items[item_id]
+                    gold = inventory_system.sell_item(current_character, item_id, item_data)
+                    print(f"You sold {item_data['name']} for {gold} gold.")
+                else:
+                    print("Invalid Item ID.")
+
+        except (ItemNotFoundError, InsufficientResourcesError, InventoryFullError) as e:
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        input("\nPress Enter to continue...")
 
 # ============================================================================
 # HELPER FUNCTIONS
