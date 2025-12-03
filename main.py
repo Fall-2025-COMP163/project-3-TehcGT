@@ -122,7 +122,29 @@ def load_game():
     # Try to load character with character_manager.load_character()
     # Handle CharacterNotFoundError and SaveFileCorruptedError
     # Start game loop
-    pass
+    global current_character
+    print("\n--- LOAD GAME ---")
+    saved_chars = character_manager.list_saved_characters()
+    
+    if not saved_chars:
+        print("No saved games found.")
+        return
+        
+    print("Available characters:")
+    for i, name in enumerate(saved_chars, 1):
+        print(f"{i}. {name}")
+        
+    choice = input("Enter the name of the character to load: ").strip()
+    try:
+        current_character = character_manager.load_character(choice)
+        print(f"\nWelcome back, {current_character['name']}!")
+        
+        game_loop()
+    except (CharacterNotFoundError, SaveFileCorruptedError, InvalidSaveDataError) as e:
+        # 4. CATCH exceptions
+        print(f"Error loading game: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 # ============================================================================
 # GAME LOOP
