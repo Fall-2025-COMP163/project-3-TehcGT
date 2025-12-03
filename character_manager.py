@@ -205,7 +205,17 @@ def delete_character(character_name, save_directory="data/save_games"):
     """
     # TODO: Implement character deletion
     # Verify file exists before attempting deletion
-    pass
+    filename = f"{character_name}_save.txt"
+    filepath = save_directory + "/" + filename
+    if not os.path.exists(filepath):
+        raise CharacterNotFoundError(f"No save file to delete for {character_name}")
+        
+    try:
+        os.remove(filepath)
+        return True
+    except OSError as e:
+        print(f"Error deleting file {filepath}: {e}")
+        raise
 
 # ============================================================================
 # CHARACTER OPERATIONS
