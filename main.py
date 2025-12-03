@@ -474,7 +474,13 @@ def save_game():
     # TODO: Implement save
     # Use character_manager.save_character()
     # Handle any file I/O exceptions
-    pass
+    if current_character:
+        try:
+            character_manager.save_character(current_character)
+        except IOError as e:
+            print(f"Error saving game: {e}")
+    else:
+        pass
 
 def load_game_data():
     """Load all quest and item data from files"""
