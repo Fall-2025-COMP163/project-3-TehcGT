@@ -354,7 +354,32 @@ def validate_character_data(character):
     # Check all required keys exist
     # Check that numeric values are numbers
     # Check that lists are actually lists
-    pass
+    REQUIRED_KEYS = [
+        "name", "class", "level", "health", "max_health", 
+        "strength", "magic", "experience", "gold", "inventory",
+        "active_quests", "completed_quests"]
+    NUMERIC_KEYS = [
+        "level", "health", "max_health", "strength", 
+        "magic", "experience", "gold"]
+    LIST_KEYS = ["inventory", "active_quests", "completed_quests"]
+    
+    try:
+        for key in REQUIRED_KEYS:
+            if key not in character:
+                raise InvalidSaveDataError(f"Loaded data missing required field: {key}")
+        
+        for key in NUMERIC_KEYS:
+            if not isinstance(character[key], int):
+                raise InvalidSaveDataError(f"Field '{key}' is not a number. Found: {type(character[key])}")
+                
+        for key in LIST_KEYS:
+             if not isinstance(character[key], list):
+                raise InvalidSaveDataError(f"Field '{key}' is not a list. Found: {type(character[key])}")
+                
+    except TypeError:
+        raise InvalidSaveDataError("A type mismatch error occurred during validation.")
+        
+    return True
 
 # ============================================================================
 # TESTING
