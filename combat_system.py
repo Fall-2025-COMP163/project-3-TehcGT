@@ -110,7 +110,56 @@ class SimpleBattle:
         # Check character isn't dead
         # Loop until someone dies
         # Award XP and gold if player wins
-        pass
+        if self.character['health'] <= 0:
+            raise CharacterDeadError("Cannot start battle, character is dead.")
+            
+        self.combat_active = True
+        self.turn = 1
+        display_battle_log(f"A wild {self.enemy['name']} appears!")
+        
+        winner = None
+        
+        while self.combat_active:
+            display_battle_log(f"--- Turn {self.turn} ---")
+            
+            self.player_turn()
+            
+            if not self.combat_active:
+                winner = 'escaped'
+                break
+                
+            winner = self.check_battle_end()
+            if winner:
+                break
+                
+            self.enemy_turn()
+            
+            winner = self.check_battle_end()
+            if winner:
+                break
+                
+            self.turn += 1
+            if self.ability_cooldown > 0:
+                self.ability_cooldown -= 1
+
+        if winner == 'player':
+            display_battle_log(f"You defeated the {self.enemy['name']}!")
+            rewards = get_victory_rewards(self.enemy)
+            
+            character_manager.gain_experience(self.character, rewards['xp'])
+            character_manager.add_gold(self.character, rewards['gold'])
+            
+            return {
+                'winner': 'player', 
+                'xp_gained': rewards['xp'], 
+                'gold_gained': rewards['gold']
+            }
+        elif winner == 'enemy':
+            display_battle_log("You have been defeated... Game Over.")
+            return {'winner': 'enemy', 'xp_gained': 0, 'gold_gained': 0}
+        else:
+            display_battle_log("You fled from the battle.")
+            return {'winner': 'none', 'xp_gained': 0, 'gold_gained': 0}
     
     def player_turn(self):
         """
@@ -128,7 +177,41 @@ class SimpleBattle:
         # Display options
         # Get player choice
         # Execute chosen action
-        pass
+        if not self.combat_active:
+            raise CombatNotActiveError("player_turn called when combat is not active.")
+            
+        display_combat_stats(self.character, self.enemy)
+        
+        print("\n--- Your Turn ---")
+        print("1. Basic Attack")
+        print(f"2. Special Ability ({self.character['class']})")
+        print("3. Try to Run")
+        
+        choice = input("Choose your action (1-3): ")
+        
+        if choice == '1':
+            display_battle_log("You attack!")
+            damage = self.calculate_damage(self.character, self.enemy)
+            self.apply_damage(self.enemy, damage)
+            display_battle_log(f"The {self.enemy['name']} takes {damage} damage.")
+            
+        elif choice == '2':
+            if self.ability_cooldown > 0:
+                display_battle_log(f"Ability on cooldown! {self.ability_cooldown} turns left.")
+                return
+
+            try:
+                message = use_special_ability(self.character, self.enemy, self)
+                display_battle_log(message)
+                self.ability_cooldown = 3 
+            except Exception as e:
+                display_battle_log(f"Ability failed: {e}")
+                
+        elif choice == '3':
+            self.attempt_escape()
+            
+        else:
+            display_battle_log("Invalid choice. You hesitate and lose your turn.")
     
     def enemy_turn(self):
         """
