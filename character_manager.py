@@ -240,7 +240,26 @@ def gain_experience(character, xp_amount):
     # Add experience
     # Check for level up (can level up multiple times)
     # Update stats on level up
-    pass
+    if is_character_dead(character):
+        raise CharacterDeadError(f"{character['name']} is dead and cannot gain XP.")
+        
+    character['experience'] += xp_amount
+    print(f"{character['name']} gained {xp_amount} XP!")
+    
+    level_up_xp = character['level'] * 100
+    
+    while character['experience'] >= level_up_xp:
+        character['experience'] -= level_up_xp
+        character['level'] += 1
+        character['max_health'] += 10
+        character['strength'] += 2
+        character['magic'] += 2
+        character['health'] = character['max_health'] # Full heal
+        
+        print(f"*** LEVEL UP! *** {character['name']} is now Level {character['level']}!")
+        print(f"HP: {character['max_health']}, STR: {character['strength']}, MAG: {character['magic']}")
+        
+        level_up_xp = character['level'] * 100
 
 def add_gold(character, amount):
     """
