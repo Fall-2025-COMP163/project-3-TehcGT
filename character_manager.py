@@ -47,7 +47,7 @@ def create_character(name, character_class):
     # - inventory=[], active_quests=[], completed_quests=[]
     
     # Raise InvalidCharacterClassError if class not in valid list
-    valid_class = ["Warrior", "Rouge", "Cleric", "Mage"]
+    valid_class = ["Warrior", "Rogue", "Cleric", "Mage"]
 
     if character_class.capitalize() not in valid_class:
         raise InvalidCharacterClassError(f"Invalid class {character_class}. Available classes are: {','.join(valid_class)}")

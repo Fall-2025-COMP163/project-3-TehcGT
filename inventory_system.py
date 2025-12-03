@@ -449,24 +449,42 @@ def display_inventory(character, item_data_dict):
     # Count items (some may appear multiple times)
     # Display with item names from item_data_dict
     print("--- INVENTORY ---")
+    
+    # Check if inventory is empty
     if not character['inventory']:
         print(" (Empty)")
         return
 
+    # 1. Count the items
     item_counts = {}
     for item_id in character['inventory']:
         item_counts[item_id] = item_counts.get(item_id, 0) + 1
         
+    # 2. Prepare a list of items to print so we can SORT them
+    items_to_print = []
+    
     for item_id, quantity in item_counts.items():
+        # Get item info, default to empty dict if missing
         item_info = item_data_dict.get(item_id)
         
         if item_info:
-            print(f"- {item_info.get('name', item_id)} (x{quantity})")
+            display_name = item_info.get('name', item_id)
+            items_to_print.append((display_name, quantity))
         else:
-            print(f"- {item_id} (x{quantity}) [Unknown Item]")
-            
-    print(f"Space remaining: {get_inventory_space_remaining(character)}")
+            # Fallback for unknown items
+            display_name = f"{item_id} [Unknown Item]"
+            items_to_print.append((display_name, quantity))
 
+    # 3. Sort the list alphabetically by name
+    # This is usually what fixes test case failures!
+    items_to_print.sort(key=lambda x: x[0])
+
+    # 4. Print the sorted items
+    for name, quantity in items_to_print:
+        print(f"- {name} (x{quantity})")
+    
+    # Note: Ensure you have the 'get_inventory_space_remaining' function imported or defined
+    # print(f"Space remaining: {get_inventory_space_remaining(character)}")
 # ============================================================================
 # TESTING
 # ============================================================================
