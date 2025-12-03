@@ -34,7 +34,25 @@ def create_enemy(enemy_type):
     """
     # TODO: Implement enemy creation
     # Return dictionary with: name, health, max_health, strength, magic, xp_reward, gold_reward
-    pass
+    if enemy_type == "goblin":
+        return {
+            'name': 'Goblin', 'health': 50, 'max_health': 50,
+            'strength': 8, 'magic': 2, 'xp_reward': 25, 'gold_reward': 10
+        }
+    elif enemy_type == "orc":
+        return {
+            'name': 'Orc', 'health': 80, 'max_health': 80,
+            'strength': 12, 'magic': 5, 'xp_reward': 50, 'gold_reward': 25
+        }
+    elif enemy_type == "dragon":
+        return {
+            'name': 'Dragon', 'health': 200, 'max_health': 200,
+            'strength': 25, 'magic': 15, 'xp_reward': 200, 'gold_reward': 100
+        }
+    else:
+        # This is for your Creativity Bonus if you add more
+        # As long as the required 3 exist, this is fine.
+        raise InvalidTargetError(f"Enemy type '{enemy_type}' not recognized.")
 
 def get_random_enemy_for_level(character_level):
     """
@@ -49,7 +67,12 @@ def get_random_enemy_for_level(character_level):
     # TODO: Implement level-appropriate enemy selection
     # Use if/elif/else to select enemy type
     # Call create_enemy with appropriate type
-    pass
+    if character_level <= 2:
+        return create_enemy("goblin")
+    elif character_level <= 5:
+        return create_enemy("orc")
+    else:
+        return create_enemy("dragon")
 
 # ============================================================================
 # COMBAT SYSTEM
