@@ -275,7 +275,16 @@ def add_gold(character, amount):
     # TODO: Implement gold management
     # Check that result won't be negative
     # Update character's gold
-    pass
+    new_total = character['gold'] + amount
+    
+    if new_total < 0:
+        raise ValueError(
+            f"Cannot spend {abs(amount)} gold. "
+            f"You only have {character['gold']}."
+        )
+        
+    character['gold'] = new_total
+    return character['gold']
 
 def heal_character(character, amount):
     """
@@ -288,7 +297,18 @@ def heal_character(character, amount):
     # TODO: Implement healing
     # Calculate actual healing (don't exceed max_health)
     # Update character health
-    pass
+    current_health = character['health']
+    if current_health <= 0:
+        # Cannot heal a dead character (must be revived)
+        return 0 
+        
+    max_health = character['max_health']
+    potential_health = current_health + amount
+    new_health = min(potential_health, max_health) # Cap at max
+    actual_healed = new_health - current_health
+    character['health'] = new_health
+    
+    return actual_healed
 
 def is_character_dead(character):
     """
@@ -297,7 +317,7 @@ def is_character_dead(character):
     Returns: True if dead, False if alive
     """
     # TODO: Implement death check
-    pass
+    return character['health'] <= 0
 
 def revive_character(character):
     """
@@ -307,7 +327,13 @@ def revive_character(character):
     """
     # TODO: Implement revival
     # Restore health to half of max_health
-    pass
+    if not is_character_dead(character):
+        return False # Wasn't dead
+        
+    revive_health = character['max_health'] // 2
+    character['health'] = max(revive_health, 1) # Revive to 50% or 1 HP
+    
+    return True
 
 # ============================================================================
 # VALIDATION
