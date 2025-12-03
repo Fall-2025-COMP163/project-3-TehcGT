@@ -199,7 +199,7 @@ def equip_weapon(character, item_id, item_data):
         stat_name, value = parse_item_effect(item_data['effect'])
         apply_stat_effect(character, stat_name, value)
 
-        character['equipped_weapon'] = {'id':item_id, 'effect': item_data['effect']}
+        character['equipped_weapon'] = {'id': item_id, 'effect': item_data['effect']}
         
         remove_item_from_inventory(character, item_id)
         

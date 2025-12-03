@@ -53,7 +53,7 @@ def create_character(name, character_class):
         raise InvalidCharacterClassError(f"Invalid class {character_class}. Available classes are: {','.join(valid_class)}")
     
 
-    character = { "name": name, "class": character_class.capitalize(), "level": 1, "experience": 0, "gold": 100, "inventory": [], "active_quests": [], "completed_quests": []}
+    character = { "name": name, "class": character_class.capitalize(), "level": 1, "experience": 0, "gold": 100, "inventory": [], "active_quests": [], "completed_quests": [],"equipped_weapon": None,"equipped_armor": None}
 
     if character_class.capitalize() == "Warrior":
         class_stats = {"health": 120, "max_health": 120, "strength": 15, "magic": 5}
