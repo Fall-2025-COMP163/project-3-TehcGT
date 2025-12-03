@@ -382,6 +382,25 @@ def explore():
     # Start combat with combat_system.SimpleBattle
     # Handle combat results (XP, gold, death)
     # Handle exceptions
+    print("\nYou venture out into the wilderness...")
+    
+    try:
+        enemy = combat_system.get_random_enemy_for_level(current_character['level'])
+        
+        battle = combat_system.SimpleBattle(current_character, enemy)
+        
+        result = battle.start_battle()
+        
+        print(f"Battle finished. Winner: {result['winner']}")
+        if result['winner'] == 'player':
+            print(f"You gained {result['xp_gained']} XP and {result['gold_gained']} gold.")
+        
+    except CharacterDeadError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        
+    input("\nPress Enter to continue...")
     pass
 
 def shop():
