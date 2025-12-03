@@ -9,6 +9,7 @@ AI Usage: [Document any AI assistance used]
 This module handles inventory management, item usage, and equipment.
 """
 
+import character_manager
 from custom_exceptions import (
     InventoryFullError,
     ItemNotFoundError,
@@ -397,7 +398,14 @@ def parse_item_effect(effect_string):
     # TODO: Implement effect parsing
     # Split on ":"
     # Convert value to integer
-    pass
+    try:
+        parts = effect_string.split(':')
+        stat_name = parts[0]
+        value = int(parts[1])
+        return (stat_name, value)
+    except (IndexError, ValueError):
+        # Raise an error that the calling function can catch
+        raise ValueError(f"Invalid effect string format: '{effect_string}'")
 
 def apply_stat_effect(character, stat_name, value):
     """
@@ -410,7 +418,22 @@ def apply_stat_effect(character, stat_name, value):
     # TODO: Implement stat application
     # Add value to character[stat_name]
     # If stat is health, ensure it doesn't exceed max_health
-    pass
+    if stat_name == 'health':
+
+        character_manager.heal_character(character, value)
+    
+    elif stat_name == 'max_health':
+        character['max_health'] += value
+        character_manager.heal_character(character, value)
+        
+    elif stat_name == 'strength':
+        character['strength'] += value
+        
+    elif stat_name == 'magic':
+        character['magic'] += value
+        
+    else:
+        print(f"Warning: Invalid stat name '{stat_name}' in apply_stat_effect")
 
 def display_inventory(character, item_data_dict):
     """
@@ -425,7 +448,24 @@ def display_inventory(character, item_data_dict):
     # TODO: Implement inventory display
     # Count items (some may appear multiple times)
     # Display with item names from item_data_dict
-    pass
+    print("--- INVENTORY ---")
+    if not character['inventory']:
+        print(" (Empty)")
+        return
+
+    item_counts = {}
+    for item_id in character['inventory']:
+        item_counts[item_id] = item_counts.get(item_id, 0) + 1
+        
+    for item_id, quantity in item_counts.items():
+        item_info = item_data_dict.get(item_id)
+        
+        if item_info:
+            print(f"- {item_info.get('name', item_id)} (x{quantity})")
+        else:
+            print(f"- {item_id} (x{quantity}) [Unknown Item]")
+            
+    print(f"Space remaining: {get_inventory_space_remaining(character)}")
 
 # ============================================================================
 # TESTING
