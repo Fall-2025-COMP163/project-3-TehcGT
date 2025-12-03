@@ -199,7 +199,7 @@ def equip_weapon(character, item_id, item_data):
         stat_name, value = parse_item_effect(item_data['effect'])
         apply_stat_effect(character, stat_name, value)
 
-        character['equipped_weapon'] = item_id
+        character['equipped_weapon'] = {'id':item_id, 'effect': item_data['effect']}
         
         remove_item_from_inventory(character, item_id)
         
@@ -247,7 +247,7 @@ def equip_armor(character, item_id, item_data):
         stat_name, value = parse_item_effect(item_data['effect'])
         apply_stat_effect(character, stat_name, value)
         
-        character['equipped_armor'] = {item_id}
+        character['equipped_armor'] = {'id': item_id, 'effect': item_data['effect']}
         remove_item_from_inventory(character, item_id)
         
         return f"{unequipped_msg}Equipped {item_data.get('name', item_id)}."
@@ -347,13 +347,13 @@ def purchase_item(character, item_id, item_data):
             f"Cannot buy {item_id}: Costs {cost} gold, "
             f"you only have {character['gold']}."
         )
+    add_item_to_inventory(character, item_id)
 
     if len(character['inventory']) >= 20:
         raise InventoryFullError("Inventory is full, cannot purchase item.")
 
     character['gold'] -= cost
 
-    character['inventory'].append(item_id)
 
     return True
 
