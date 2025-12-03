@@ -491,7 +491,11 @@ def load_game_data():
     # Try to load items with game_data.load_items()
     # Handle MissingDataFileError, InvalidDataFormatError
     # If files missing, create defaults with game_data.create_default_data_files()
-    pass
+    all_quests = game_data.load_quests()
+    all_items = game_data.load_items()
+
+    quest_handler.validate_quest_prerequisites(all_quests)
+    print("Game data and quest prerequisites validated.")
 
 def handle_character_death():
     """Handle character death"""
