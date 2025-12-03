@@ -278,7 +278,52 @@ def quest_menu():
     #   6. Complete Quest (for testing)
     #   7. Back
     # Handle exceptions from quest_handler
-    pass
+
+    while True:
+        print("\n--- INVENTORY ---")
+        inventory_system.display_inventory(current_character, all_items)
+        
+        print("\n(U)se, (E)quip, (S)ell, (B)ack")
+        choice = input("Choose an action: ").strip().upper()
+
+        if choice == 'B':
+            break
+        elif choice not in ['U', 'E', 'S']:
+            print("Invalid choice.")
+            continue
+            
+        try:
+            item_id = input("Enter the Item ID to use/equip/sell: ").strip()
+            if item_id not in all_items:
+                print("That is not a valid item ID.")
+                continue
+                
+            item_data = all_items[item_id]
+
+            if choice == 'U':
+                result = inventory_system.use_item(current_character, item_id, item_data)
+                print(result)
+            
+            elif choice == 'S':
+                gold = inventory_system.sell_item(current_character, item_id, item_data)
+                print(f"You sold {item_data['name']} for {gold} gold.")
+                
+            elif choice == 'E':
+                if item_data['type'] == 'weapon':
+                    result = inventory_system.equip_weapon(current_character, item_id, item_data)
+                    print(result)
+                elif item_data['type'] == 'armor':
+                    result = inventory_system.equip_armor(current_character, item_id, item_data)
+                    print(result)
+                else:
+                    print("You can only equip 'weapon' or 'armor' type items.")
+
+        except (ItemNotFoundError, InvalidItemTypeError, InsufficientResourcesError, InventoryFullError) as e:
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        
+        input("\nPress Enter to continue...")
 
 def explore():
     """Find and fight random enemies"""
