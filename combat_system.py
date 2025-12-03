@@ -91,7 +91,11 @@ class SimpleBattle:
         # Store character and enemy
         # Set combat_active flag
         # Initialize turn counter
-        pass
+        self.character = character
+        self.enemy = enemy
+        self.combat_active = False
+        self.turn = 1
+        self.ability_cooldown = 0
     
     def start_battle(self):
         """
