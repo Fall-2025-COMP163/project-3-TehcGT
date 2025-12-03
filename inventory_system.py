@@ -135,7 +135,25 @@ def use_item(character, item_id, item_data):
     # Parse effect (format: "stat_name:value" e.g., "health:20")
     # Apply effect to character
     # Remove item from inventory
-    pass
+    if not has_item(character, item_id):
+        raise ItemNotFoundError(f"Cannot use: {item_id} not in inventory.")
+        
+    if item_data['type'] != 'consumable':
+        raise InvalidItemTypeError(f"Cannot 'use' item of type: {item_data['type']}.")
+        
+    try:
+        stat_name, value = parse_item_effect(item_data['effect'])
+        
+        apply_stat_effect(character, stat_name, value)
+
+        remove_item_from_inventory(character, item_id)
+        
+        return f"Used {item_data.get('name', item_id)}. {stat_name} increased by {value}."
+        
+    except ValueError as e:
+        raise InvalidItemTypeError(f"Item {item_id} has invalid effect data: {e}")
+    except ItemNotFoundError:
+        return "Error: Item was used but could not be removed."
 
 def equip_weapon(character, item_id, item_data):
     """
@@ -163,7 +181,31 @@ def equip_weapon(character, item_id, item_data):
     # Parse effect and apply to character stats
     # Store equipped_weapon in character dictionary
     # Remove item from inventory
-    pass
+    if not has_item(character, item_id):
+        raise ItemNotFoundError(f"Cannot equip: {item_id} not in inventory.")
+        
+    if item_data['type'] != 'weapon':
+        raise InvalidItemTypeError(f"Cannot equip item of type: {item_data['type']}.")
+    
+    unequipped_msg = ""
+    if character.get('equipped_weapon'):
+        try:
+            old_item_id = unequip_weapon(character)
+            unequipped_msg = f"Unequipped {old_item_id}. "
+        except InventoryFullError:
+            return "Cannot equip new weapon: Inventory is full!"
+    try:
+        stat_name, value = parse_item_effect(item_data['effect'])
+        apply_stat_effect(character, stat_name, value)
+
+        character['equipped_weapon'] = item_id
+        
+        remove_item_from_inventory(character, item_id)
+        
+        return f"{unequipped_msg}Equipped {item_data.get('name', item_id)}."
+        
+    except ValueError as e:
+        return f"Error equipping {item_id}: Invalid effect data. {e}"
 
 def equip_armor(character, item_id, item_data):
     """
@@ -186,8 +228,31 @@ def equip_armor(character, item_id, item_data):
         InvalidItemTypeError if item type is not 'armor'
     """
     # TODO: Implement armor equipping
-    # Similar to equip_weapon but for armor
-    pass
+    if not has_item(character, item_id):
+        raise ItemNotFoundError(f"Cannot equip: {item_id} not in inventory.")
+        
+    if item_data['type'] != 'armor':
+        raise InvalidItemTypeError(f"Cannot equip item of type: {item_data['type']}.")
+
+    unequipped_msg = ""
+    if character.get('equipped_armor'):
+        try:
+            old_item_id = unequip_armor(character)
+            unequipped_msg = f"Unequipped {old_item_id}. "
+        except InventoryFullError:
+            return "Cannot equip new armor: Inventory is full!"
+            
+    try:
+        stat_name, value = parse_item_effect(item_data['effect'])
+        apply_stat_effect(character, stat_name, value)
+        
+        character['equipped_armor'] = {item_id}
+        remove_item_from_inventory(character, item_id)
+        
+        return f"{unequipped_msg}Equipped {item_data.get('name', item_id)}."
+        
+    except ValueError as e:
+        return f"Error equipping {item_id}: Invalid effect data. {e}"
 
 def unequip_weapon(character):
     """
@@ -201,7 +266,27 @@ def unequip_weapon(character):
     # Remove stat bonuses
     # Add weapon back to inventory
     # Clear equipped_weapon from character
-    pass
+    if not character.get('equipped_weapon'):
+        return None # Nothing was equipped
+    
+    if get_inventory_space_remaining(character) <= 0:
+        raise InventoryFullError("Cannot unequip weapon: Inventory is full.")
+    
+    equipped = character['equipped_weapon']
+    item_id = equipped['id']
+    effect_string = equipped['effect']
+
+    try:
+        stat_name, value = parse_item_effect(effect_string)
+        apply_stat_effect(character, stat_name, -value)
+    except ValueError:
+        print(f"Warning: Could not parse effect for equipped item {item_id}.")
+        
+    add_item_to_inventory(character, item_id)
+    
+    character['equipped_weapon'] = None
+    
+    return item_id
 
 def unequip_armor(character):
     """
@@ -211,7 +296,26 @@ def unequip_armor(character):
     Raises: InventoryFullError if inventory is full
     """
     # TODO: Implement armor unequipping
-    pass
+    if not character.get('equipped_armor'):
+        return None # Nothing was equipped
+
+    if get_inventory_space_remaining(character) <= 0:
+        raise InventoryFullError("Cannot unequip armor: Inventory is full.")
+
+    equipped = character['equipped_armor']
+    item_id = equipped['id']
+    effect_string = equipped['effect']
+    
+    try:
+        stat_name, value = parse_item_effect(effect_string)
+        apply_stat_effect(character, stat_name, -value) # Apply negative
+    except ValueError:
+        print(f"Warning: Could not parse effect for equipped item {item_id}.")
+        
+    add_item_to_inventory(character, item_id)
+    character['equipped_armor'] = None
+    
+    return item_id
 
 # ============================================================================
 # SHOP SYSTEM
