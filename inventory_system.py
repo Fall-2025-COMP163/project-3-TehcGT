@@ -298,7 +298,7 @@ def unequip_armor(character):
     """
     # TODO: Implement armor unequipping
     if not character.get('equipped_armor'):
-        return None # Nothing was equipped
+        return None
 
     if get_inventory_space_remaining(character) <= 0:
         raise InventoryFullError("Cannot unequip armor: Inventory is full.")
@@ -309,7 +309,7 @@ def unequip_armor(character):
     
     try:
         stat_name, value = parse_item_effect(effect_string)
-        apply_stat_effect(character, stat_name, -value) # Apply negative
+        apply_stat_effect(character, stat_name, -value)
     except ValueError:
         print(f"Warning: Could not parse effect for equipped item {item_id}.")
         
@@ -349,8 +349,6 @@ def purchase_item(character, item_id, item_data):
         )
     add_item_to_inventory(character, item_id)
 
-    if len(character['inventory']) >= 20:
-        raise InventoryFullError("Inventory is full, cannot purchase item.")
 
     character['gold'] -= cost
 
@@ -404,7 +402,6 @@ def parse_item_effect(effect_string):
         value = int(parts[1])
         return (stat_name, value)
     except (IndexError, ValueError):
-        # Raise an error that the calling function can catch
         raise ValueError(f"Invalid effect string format: '{effect_string}'")
 
 def apply_stat_effect(character, stat_name, value):
