@@ -149,3 +149,5 @@ Test files are provided for your learning but are protected. Modifying test file
 - Academic integrity investigation
 
 You can view tests to understand requirements, but any modifications will be automatically detected.
+
+Quest Chronicles is a modular Python RPG featuring character creation, inventory management, turn-based combat, and questing with save capabilities. The AI documentation highlights the resolution of critical integration bugs, specifically standardizing equipment data structures to handle both dictionary and string formats for automated testing and implementing defensive programming to fix combat argument mismatches. To play, simply ensure all project files are in the same directory and execute python main.py in your terminal.
