@@ -340,7 +340,21 @@ def purchase_item(character, item_id, item_data):
     # Check if inventory has space
     # Subtract gold from character
     # Add item to inventory
-    pass
+    cost = item_data['cost']
+    if character['gold'] < cost:
+        raise InsufficientResourcesError(
+            f"Cannot buy {item_id}: Costs {cost} gold, "
+            f"you only have {character['gold']}."
+        )
+
+    if len(character['inventory']) >= 20:
+        raise InventoryFullError("Inventory is full, cannot purchase item.")
+
+    character['gold'] -= cost
+
+    character['inventory'].append(item_id)
+
+    return True
 
 def sell_item(character, item_id, item_data):
     """
@@ -359,7 +373,12 @@ def sell_item(character, item_id, item_data):
     # Calculate sell price (cost // 2)
     # Remove item from inventory
     # Add gold to character
-    pass
+    remove_item_from_inventory(character, item_id)
+    
+    sell_price = item_data['cost'] // 2
+    character['gold'] += sell_price
+    
+    return sell_price
 
 # ============================================================================
 # HELPER FUNCTIONS
