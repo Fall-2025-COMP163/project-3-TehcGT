@@ -262,23 +262,6 @@ def view_inventory():
     # Show current inventory
     # Options: Use item, Equip weapon/armor, Drop item
     # Handle exceptions from inventory_system
-    pass
-
-def quest_menu():
-    """Quest management menu"""
-    global current_character, all_quests
-    
-    # TODO: Implement quest menu
-    # Show:
-    #   1. View Active Quests
-    #   2. View Available Quests
-    #   3. View Completed Quests
-    #   4. Accept Quest
-    #   5. Abandon Quest
-    #   6. Complete Quest (for testing)
-    #   7. Back
-    # Handle exceptions from quest_handler
-
     while True:
         print("\n--- INVENTORY ---")
         inventory_system.display_inventory(current_character, all_items)
@@ -323,6 +306,71 @@ def quest_menu():
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
         
+        input("\nPress Enter to continue...")
+
+
+def quest_menu():
+    """Quest management menu"""
+    global current_character, all_quests
+    
+    # TODO: Implement quest menu
+    # Show:
+    #   1. View Active Quests
+    #   2. View Available Quests
+    #   3. View Completed Quests
+    #   4. Accept Quest
+    #   5. Abandon Quest
+    #   6. Complete Quest (for testing)
+    #   7. Back
+    # Handle exceptions from quest_handler
+
+    while True:
+        print("\n--- QUEST MENU ---")
+        print("1. View Active Quests")
+        print("2. View Available Quests")
+        print("3. View Completed Quests")
+        print("4. Accept Quest")
+        print("5. Abandon Quest")
+        print("6. Back to Game Menu")
+        
+        choice = input("Select an option (1-6): ").strip()
+        
+        try:
+            if choice == '1':
+                active = quest_handler.get_active_quests(current_character, all_quests)
+                quest_handler.display_quest_list(active)
+            
+            elif choice == '2':
+                available = quest_handler.get_available_quests(current_character, all_quests)
+                quest_handler.display_quest_list(available)
+            
+            elif choice == '3':
+                completed = quest_handler.get_completed_quests(current_character, all_quests)
+                quest_handler.display_quest_list(completed)
+            
+            elif choice == '4':
+                quest_id = input("Enter Quest ID to accept: ").strip()
+                quest_handler.accept_quest(current_character, quest_id, all_quests)
+                print(f"Quest '{quest_id}' accepted!")
+            
+            elif choice == '5':
+                quest_id = input("Enter Quest ID to abandon: ").strip()
+                quest_handler.abandon_quest(current_character, quest_id)
+                print(f"Quest '{quest_id}' abandoned.")
+            
+            elif choice == '6':
+                break
+            else:
+                print("Invalid choice. Please enter a number 1-6.")
+                
+        except (QuestNotFoundError, QuestRequirementsNotMetError, 
+                QuestAlreadyCompletedError, QuestNotActiveError, 
+                InsufficientLevelError) as e:
+            # CATCH ALL QUEST EXCEPTIONS
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            
         input("\nPress Enter to continue...")
 
 def explore():
