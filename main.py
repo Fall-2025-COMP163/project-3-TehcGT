@@ -208,7 +208,25 @@ def game_menu():
     Returns: Integer choice (1-6)
     """
     # TODO: Implement game menu
-    pass
+    print("\n" + "=" * 20)
+    print("      GAME MENU")
+    print("=" * 20)
+    print(f"Name: {current_character['name']} | Level: {current_character['level']}")
+    print(f"HP: {current_character['health']}/{current_character['max_health']} | Gold: {current_character['gold']}")
+    print("-" * 20)
+    print("1. View Character Stats")
+    print("2. View Inventory")
+    print("3. Quest Menu")
+    print("4. Explore (Find Battle)")
+    print("5. Shop")
+    print("6. Save and Quit to Main Menu")
+    
+    while True:
+        choice = input("Select an option (1-6): ")
+        if choice.isdigit() and 1 <= int(choice) <= 6:
+            return int(choice)
+        else:
+            print("Invalid choice. Please enter a number 1-6.")
 
 # ============================================================================
 # GAME ACTIONS
