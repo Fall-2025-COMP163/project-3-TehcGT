@@ -9,6 +9,8 @@ AI Usage: [Document any AI assistance used]
 Handles combat mechanics
 """
 
+import random
+import character_manager
 from custom_exceptions import (
     InvalidTargetError,
     CombatNotActiveError,
@@ -225,7 +227,13 @@ class SimpleBattle:
         # Check combat is active
         # Calculate damage
         # Apply to character
-        pass
+        if not self.combat_active:
+            raise CombatNotActiveError("enemy_turn called when combat is not active.")
+
+        display_battle_log(f"The {self.enemy['name']} attacks!")
+        damage = self.calculate_damage(self.enemy, self.character)
+        self.apply_damage(self.character, damage)
+        display_battle_log(f"You take {damage} damage.")
     
     def calculate_damage(self, attacker, defender):
         """
@@ -237,7 +245,12 @@ class SimpleBattle:
         Returns: Integer damage amount
         """
         # TODO: Implement damage calculation
-        pass
+        if 'class' in attacker: # Attacker is player
+            base_damage = attacker['strength']
+        else:
+            base_damage = attacker['strength']
+        damage = base_damage - (defender['strength'] // 4)
+        return max(1, damage)
     
     def apply_damage(self, target, damage):
         """
@@ -246,7 +259,8 @@ class SimpleBattle:
         Reduces health, prevents negative health
         """
         # TODO: Implement damage application
-        pass
+        target['health'] -= damage
+        target['health'] = max(0, target['health'])
     
     def check_battle_end(self):
         """
@@ -255,7 +269,14 @@ class SimpleBattle:
         Returns: 'player' if enemy dead, 'enemy' if character dead, None if ongoing
         """
         # TODO: Implement battle end check
-        pass
+        if self.character['health'] <= 0:
+            self.combat_active = False
+            return 'enemy'
+        elif self.enemy['health'] <= 0:
+            self.combat_active = False
+            return 'player'
+        
+        return None
     
     def attempt_escape(self):
         """
@@ -268,7 +289,13 @@ class SimpleBattle:
         # TODO: Implement escape attempt
         # Use random number or simple calculation
         # If successful, set combat_active to False
-        pass
+        if random.random() < 0.5:
+            display_battle_log("You successfully escaped!")
+            self.combat_active = False # This will end the battle loop
+            return True
+        else:
+            display_battle_log("You failed to escape!")
+            return False
 
 # ============================================================================
 # SPECIAL ABILITIES
@@ -291,31 +318,55 @@ def use_special_ability(character, enemy):
     # Check character class
     # Execute appropriate ability
     # Track cooldowns (optional advanced feature)
-    pass
+    char_class = character['class']
+    
+    if char_class == 'Warrior':
+        return warrior_power_strike(character, enemy, battle)
+    elif char_class == 'Mage':
+        return mage_fireball(character, enemy, battle)
+    elif char_class == 'Rogue':
+        return rogue_critical_strike(character, enemy, battle)
+    elif char_class == 'Cleric':
+        return cleric_heal(character, battle)
+    else:
+        return "You have no special ability."
 
 def warrior_power_strike(character, enemy):
     """Warrior special ability"""
     # TODO: Implement power strike
     # Double strength damage
-    pass
+    damage = (character['strength'] * 2) - (enemy['strength'] // 4)
+    damage = max(1, damage)
+    battle.apply_damage(enemy, damage)
+    return f"You use Power Strike for {damage} damage!"
 
 def mage_fireball(character, enemy):
     """Mage special ability"""
     # TODO: Implement fireball
     # Double magic damage
-    pass
+    damage = (character['magic'] * 2) - (enemy['magic'] // 4) # Simple magic defense
+    damage = max(1, damage)
+    battle.apply_damage(enemy, damage)
+    return f"You cast Fireball for {damage} damage!"
 
 def rogue_critical_strike(character, enemy):
     """Rogue special ability"""
     # TODO: Implement critical strike
     # 50% chance for triple damage
-    pass
+    if random.random() < 0.5: # 50% chance
+        damage = (character['strength'] * 3) - (enemy['strength'] // 4)
+        damage = max(1, damage)
+        battle.apply_damage(enemy, damage)
+        return f"CRITICAL STRIKE! You deal {damage} damage!"
+    else:
+        return "Your critical strike missed..."
 
 def cleric_heal(character):
     """Cleric special ability"""
     # TODO: Implement healing
     # Restore 30 HP (not exceeding max_health)
-    pass
+    healed_amount = character_manager.heal_character(character, 30)
+    return f"You use Heal, restoring {healed_amount} HP."
 
 # ============================================================================
 # COMBAT UTILITIES
