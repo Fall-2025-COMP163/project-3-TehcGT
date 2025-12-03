@@ -4,7 +4,7 @@ Main Game Module - Starter Code
 
 Name: Tehcubelleh Keamu
 
-AI Usage: [Document any AI assistance used]
+AI Usage: Used google gemini for bug fix and indentation error
 
 This is the main game file that ties all modules together.
 Demonstrates module integration and complete game flow.

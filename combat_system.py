@@ -2,9 +2,9 @@
 COMP 163 - Project 3: Quest Chronicles
 Combat System Module - Starter Code
 
-Name: [Your Name Here]
+Name: Tehcubelleh Keamu
 
-AI Usage: [Document any AI assistance used]
+AI Usage: Used google gemini for bug fixes and finding argument mixmatches
 
 Handles combat mechanics
 """
@@ -331,7 +331,7 @@ def use_special_ability(character, enemy):
     else:
         return "You have no special ability."
 
-def warrior_power_strike(character, enemy):
+def warrior_power_strike(character, enemy, battle):
     """Warrior special ability"""
     # TODO: Implement power strike
     # Double strength damage
@@ -340,7 +340,7 @@ def warrior_power_strike(character, enemy):
     battle.apply_damage(enemy, damage)
     return f"You use Power Strike for {damage} damage!"
 
-def mage_fireball(character, enemy):
+def mage_fireball(character, enemy, battle):
     """Mage special ability"""
     # TODO: Implement fireball
     # Double magic damage
@@ -349,7 +349,7 @@ def mage_fireball(character, enemy):
     battle.apply_damage(enemy, damage)
     return f"You cast Fireball for {damage} damage!"
 
-def rogue_critical_strike(character, enemy):
+def rogue_critical_strike(character, enemy, battle):
     """Rogue special ability"""
     # TODO: Implement critical strike
     # 50% chance for triple damage
@@ -361,7 +361,7 @@ def rogue_critical_strike(character, enemy):
     else:
         return "Your critical strike missed..."
 
-def cleric_heal(character):
+def cleric_heal(character, battle):
     """Cleric special ability"""
     # TODO: Implement healing
     # Restore 30 HP (not exceeding max_health)
